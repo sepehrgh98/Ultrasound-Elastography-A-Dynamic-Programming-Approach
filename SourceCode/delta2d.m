@@ -1,4 +1,4 @@
-function Costs = Cost2D(arguments)
+function Costs = delta2d(arguments)
     arguments
         arguments.inputArray1 (:,:) {mustBeNumeric};
         arguments.inputArray2 (:,:) {mustBeNumeric};

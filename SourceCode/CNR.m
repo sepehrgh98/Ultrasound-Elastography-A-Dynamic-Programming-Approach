@@ -1,4 +1,4 @@
-function cnr = calculate_cnr(target_strain, background_strain)
+function cnr = CNR(target_strain, background_strain)
 
     % Calculate spatial averages
     mean_target = mean(target_strain(:));

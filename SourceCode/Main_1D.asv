@@ -23,8 +23,8 @@ CompressedImg = CompressedImg/maxIm;
 % Initialization
 w=.15; %this is the regularization weight
 [imHight, imWidth] = size(OriginalImg);
-dmin = -100;
-dmax = 0;
+dmin = -3;
+dmax = 3;
 windowSize = 1;
 d = dmin:1:dmax; % displacement vector
 noDisp = size(d,2); % number of possible displacements
@@ -45,7 +45,7 @@ for colIdx = 1:imWidth
     % Initialize First row  
     C(1,:) = delta1d('pixelIndex',1,'displacement',d,'g', g, "g_prime", g_prime);
 %     M(1,:) = ones(1, noDisp);
-    tic;
+    
     for pixIdx = 2:imHight
         minimizedValues = NaN(1, noDisp);
         minimizedValuesIndex =  NaN(1, noDisp);
@@ -64,25 +64,33 @@ for colIdx = 1:imWidth
         C(pixIdx,:) = minimizedValues + delta1d('pixelIndex',pixIdx,'displacement',d,'g', g, "g_prime", g_prime);
         M(pixIdx,:) = minimizedValuesIndex;  
     end
-    toc;
-    [val,idx]=min(C(imHight,:));
-    D_idx=zeros(imHight,1);
-    D_idx(imHight)=idx;
-    for i=1:imHight-1
-        j=imHight-i;
+%     % Traceback Index
+%     [~, D(end, 1)] = min(C(end, :));
+%     
+%     for mIdx = imHight-1:-1:1
+%         D(mIdx, 1) = M(mIdx+1, D(mIdx+1, 1));
+%     end
+%     
+%     displacementMap(:, colIdx) = d(D);
+    %Traceback with indexes
+    len=size(g,1);
+    [val,idx]=min(C(len,:));
+    D_idx=zeros(len,1);
+    D_idx(len)=idx;
+    for i=1:len-1
+        j=len-i;
         D_idx(j)=M(j+1,D_idx(j+1));
     end
 
     D=d(D_idx)';
     displacementMap(:,colIdx)=D;
-    break;
-
+%     break;
 end
 
 fprintf('Process Finished...\n');
 fprintf('Showing Results...\n');
 
 % Results
-% figure;imagesc(displacementMap(:,1)); colormap gray; colorbar; title('Axial Displacement');
+figure;imagesc(displacementMap(:,1)); colormap gray; colorbar; title('Axial Displacement');
 
 
