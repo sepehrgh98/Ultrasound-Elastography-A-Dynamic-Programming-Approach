@@ -23,33 +23,40 @@ CompressedImg = CompressedImg/maxIm;
 % Initialization
 w=.15; %this is the regularization weight
 [imHight, imWidth] = size(OriginalImg);
-dmin = -100;
+dmin = -50;
 dmax = 0;
 windowSize = 1;
 d = dmin:1:dmax; % displacement vector
 noDisp = size(d,2); % number of possible displacements
 displacementMap = zeros(imHight, imWidth);
+numNegativeDis = sum(d <= 0);
+
 
 
 fprintf('Process Started...\n');
+
+% % delta calculation
+% delta = delta1d(pixIdx,d, g, g_prime);
 
 for colIdx = 1:imWidth
     colIdx = colIdx
     % Initialization
     g = OriginalImg(:,colIdx);
     g_prime = CompressedImg(:,colIdx);
-    C = zeros(imHight, noDisp); % Costs storge (pixel => displacement vector)
+    C = NaN(imHight, noDisp); % Costs storge (pixel => displacement vector)
     M = NaN(imHight, noDisp);
     D = zeros(imHight,1);
     
     % Initialize First row  
-    C(1,:) = delta1d('pixelIndex',1,'displacement',d,'g', g, "g_prime", g_prime);
-%     M(1,:) = ones(1, noDisp);
-    tic;
+    C(1,numNegativeDis:end) = delta1d(1,d(numNegativeDis:end), g,  g_prime);
+
     for pixIdx = 2:imHight
         minimizedValues = NaN(1, noDisp);
         minimizedValuesIndex =  NaN(1, noDisp);
-        for disIdx = 1:noDisp
+        delta = NaN(1,noDisp);
+        startDis = max(numNegativeDis - pixIdx + 1, 1);
+        endDis = noDisp;
+        for disIdx = startDis:endDis
             selectedIdx = max(disIdx - windowSize,1):min(disIdx + windowSize,noDisp);
             preC = C(pixIdx - 1,selectedIdx);
             [minValue, minIdx] = min(preC + w*S1d(d(disIdx), d(selectedIdx), 2));
@@ -60,11 +67,11 @@ for colIdx = 1:imWidth
             expectedIdx = (minIdx - 2) + disIdx;
             expectedIdx = max(expectedIdx,1);
             minimizedValuesIndex(1, disIdx) = expectedIdx;
+            delta(1, disIdx) = delta1d(pixIdx, d(disIdx),g, g_prime);
         end
-        C(pixIdx,:) = minimizedValues + delta1d('pixelIndex',pixIdx,'displacement',d,'g', g, "g_prime", g_prime);
-        M(pixIdx,:) = minimizedValuesIndex;  
+        C(pixIdx,:) = minimizedValues + delta;
+        M(pixIdx,:) = minimizedValuesIndex; 
     end
-    toc;
     [val,idx]=min(C(imHight,:));
     D_idx=zeros(imHight,1);
     D_idx(imHight)=idx;
@@ -75,14 +82,20 @@ for colIdx = 1:imWidth
 
     D=d(D_idx)';
     displacementMap(:,colIdx)=D;
-    break;
-
 end
 
 fprintf('Process Finished...\n');
 fprintf('Showing Results...\n');
 
 % Results
-% figure;imagesc(displacementMap(:,1)); colormap gray; colorbar; title('Axial Displacement');
+figure;imagesc(displacementMap); colormap gray; colorbar; title('Axial Displacement');
+displacementMap_median=medfilt2(displacementMap);
+figure;imagesc(displacementMap_median); colormap gray; colorbar; title('Axial Displacement Median filtered');
+
+% disp 'calculating strain. wait a min.'
+fprintf('Calculating Strain....\n');
+
+% output_2d_s=strain(output_2d,43);
+% figure; imagesc(output_2d_s); colormap hot; colorbar;title('Axial Strain');
 
 
