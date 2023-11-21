@@ -31,12 +31,8 @@ noDisp = size(d,2); % number of possible displacements
 displacementMap = zeros(imHight, imWidth);
 numNegativeDis = sum(d <= 0);
 
-
-
 fprintf('Process Started...\n');
 
-% % delta calculation
-% delta = delta1d(pixIdx,d, g, g_prime);
 
 for colIdx = 1:imWidth
     colIdx = colIdx
@@ -92,10 +88,11 @@ figure;imagesc(displacementMap); colormap gray; colorbar; title('Axial Displacem
 displacementMap_median=medfilt2(displacementMap);
 figure;imagesc(displacementMap_median); colormap gray; colorbar; title('Axial Displacement Median filtered');
 
-% disp 'calculating strain. wait a min.'
-fprintf('Calculating Strain....\n');
+fprintf('Saving Results....\n');
+imwrite(displacementMap, '..\Results\DP_1D\DisplacementMap1D.jpg');
+imwrite(displacementMap, '..\Results\DP_1D\DisplacementMapMedian1D.jpg');
 
-% output_2d_s=strain(output_2d,43);
-% figure; imagesc(output_2d_s); colormap hot; colorbar;title('Axial Strain');
+fprintf('Results have been saved!\n');
+
 
 

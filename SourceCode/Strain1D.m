@@ -1,4 +1,4 @@
-function [I_Mag,I_Edge] = Diff1D(arguments)
+function [I_Mag,I_Edge] = Strain1D(arguments)
     arguments
         arguments.image(1,:) mustBeNumeric;
         arguments.h(1,:) mustBeNumeric = [-1,0,1];

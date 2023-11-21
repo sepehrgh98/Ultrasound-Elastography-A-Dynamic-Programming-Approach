@@ -1,4 +1,4 @@
-function [I_Mag,I_Edge] = ImageDiff(arguments)
+function [I_Mag,I_Edge] = Strain2D(arguments)
     arguments
         arguments.image(:,:) mustBeNumeric;
         arguments.h_x(1,:) mustBeNumeric = [-1,0,1];

@@ -1,4 +1,4 @@
-function strain_map = calculate_strain_correlation(g, g_prime, beta, gamma, n)
+function strain_map = Strain_NCC(g, g_prime, beta, gamma, n)
     % Calculate strain using the correlation method with hierarchical search and subpixel estimation
 
     % Hierarchical search (downsampling)
