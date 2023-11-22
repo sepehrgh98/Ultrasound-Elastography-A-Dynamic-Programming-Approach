@@ -23,7 +23,7 @@ CompressedImg = CompressedImg/maxIm;
 % Initialization
 w=.15; %this is the regularization weight
 [imHight, imWidth] = size(OriginalImg);
-dmin = -50;
+dmin = -100;
 dmax = 0;
 windowSize = 1;
 d = dmin:1:dmax; % displacement vector
@@ -31,7 +31,7 @@ noDisp = size(d,2); % number of possible displacements
 displacementMap = zeros(imHight, imWidth);
 numNegativeDis = sum(d <= 0);
 
-fprintf('Process Started...\n');
+disp 'Process Started...';
 
 
 for colIdx = 1:imWidth
@@ -80,17 +80,17 @@ for colIdx = 1:imWidth
     displacementMap(:,colIdx)=D;
 end
 
-fprintf('Process Finished...\n');
-fprintf('Showing Results...\n');
+disp 'Process Finished...';
+disp 'Showing Results...';
 
 % Results
 figure;imagesc(displacementMap); colormap gray; colorbar; title('Axial Displacement');
 displacementMap_median=medfilt2(displacementMap);
 figure;imagesc(displacementMap_median); colormap gray; colorbar; title('Axial Displacement Median filtered');
 
-fprintf('Saving Results....\n');
-imwrite(displacementMap, '..\Results\DP_1D\DisplacementMap1D.jpg');
-imwrite(displacementMap, '..\Results\DP_1D\DisplacementMapMedian1D.jpg');
+disp 'Saving Results....';
+save('..\Results\DP_1D\DisplacementMap1D.mat', 'displacementMap');
+save('..\Results\DP_1D\DisplacementMapMedian1D.mat', 'displacementMap_median');
 
 fprintf('Results have been saved!\n');
 
