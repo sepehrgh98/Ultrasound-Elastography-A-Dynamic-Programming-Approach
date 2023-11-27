@@ -100,11 +100,16 @@ disp 'Showing Results...';
 % Results
 figure;imagesc(displacementMap); colormap hot; colorbar; title('Axial Displacement');
 displacementMap_median=medfilt2(displacementMap);
-figure;imagesc(displacementMap_median); colormap gray; colorbar; title('Axial Displacement Median filtered');
+figure;imagesc(displacementMap_median); colormap hot; colorbar; title('Axial Displacement Median filtered');
 
 disp 'Saving Results....';
-save('..\Results\DP_1D\DisplacementMap1D.mat', 'displacementMap');
-save('..\Results\DP_1D\DisplacementMapMedian1D.mat', 'displacementMap_median');
+
+% save('..\Results\ex1\DP_1D\DisplacementMap1D.mat', 'displacementMap');
+% save('..\Results\ex1\DP_1D\DisplacementMapMedian1D.mat', 'displacementMap_median');
+
+save('..\Results\ex2\DP_1D\DisplacementMap1D_ex2.mat', 'displacementMap');
+save('..\Results\ex2\DP_1D\DisplacementMapMedian1D_ex2.mat', 'displacementMap_median');
+
 
 disp 'Results have been saved!';
 

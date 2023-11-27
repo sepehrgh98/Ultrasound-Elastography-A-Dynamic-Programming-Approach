@@ -28,15 +28,13 @@
 clear all
 close all
 
-% load '../experiment1/rf_IRLS0/Im0.mat'
-% maxIm = max(Im0(:));
-% Im0 = Im0/maxIm;
-% 
-% load '../experiment1/rf_IRLS1/Im1.mat'
-% Im1 = Im1/maxIm;
+load '../experiment1/rf_IRLS0/Im0.mat'
+maxIm = max(Im0(:));
+Im0 = Im0/maxIm;
 
-Im0 = [1 2 3 4 5;6 7 8 9 10;11 12 13 14 15; 16 17 18 19 20];
-Im1 = [2 3 4 5 6;7 8 9 10 11;6 7 9 10 15; 4 6 12 15 16];
+load '../experiment1/rf_IRLS1/Im1.mat'
+Im1 = Im1/maxIm;
+
 
 % ------------------------------------------------------- %
 % ------------- set See_B_mode to see B-mode ------------ %
@@ -57,7 +55,7 @@ alfa_DP = 0.15; % DP regularization weight
 % ---------------------------------------- %
 % ------------ 2D AM Paerametes ---------- %
 % ---------------------------------------- %
-midA = 0;
+midA = 100;
 alfa = 5; %axial regularization
 beta = 10; %lateral regularization
 gamma = 0.005; %lateral regularization 

@@ -6,22 +6,22 @@ close all;
 % OriginalImg = [1 2 3 4 5;6 7 8 9 10;11 12 13 14 15; 16 17 18 19 20];
 % CompressedImg = [2 3 4 5 6;7 8 9 10 11;6 7 9 10 15; 4 6 12 15 16];
 
-% load '../Data/Im0.mat'
-% maxIm = max(Im0(:));
-% OriginalImg = Im0/maxIm;
+load '../Data/Im0.mat'
+maxIm = max(Im0(:));
+OriginalImg = Im0/maxIm;
+
+load '../Data/Im1.mat'
+CompressedImg = Im1/maxIm;
+
+% load '..\RFData\rf01.mat'
+% OriginalImg = RfDataDouble(1:1700,:);
+% maxIm = max(OriginalImg(:));
+% OriginalImg = OriginalImg/maxIm;
 % 
-% load '../Data/Im1.mat'
-% CompressedImg = Im1/maxIm;
-
-load '..\RFData\rf01.mat'
-OriginalImg = RfDataDouble(1:1700,:);
-maxIm = max(OriginalImg(:));
-OriginalImg = OriginalImg/maxIm;
-
-
-load '..\RFData\rf03.mat'
-CompressedImg = RfDataDouble(1:1700,:);
-CompressedImg = CompressedImg/maxIm;
+% 
+% load '..\RFData\rf03.mat'
+% CompressedImg = RfDataDouble(1:1700,:);
+% CompressedImg = CompressedImg/maxIm;
 
 
 % Defining Parameters
@@ -29,8 +29,8 @@ w=.15; %this is the regularization weight
 [imHight, imWidth] = size(OriginalImg);
 da_min = -100;
 da_max = 0;
-dl_min = -2;
-dl_max = 2;
+dl_min = -4;
+dl_max = 4;
 windowSize = 1;
 da = da_min:1:da_max; % axial displacement vector
 dl = dl_min:1:dl_max; % lateral displacement vector
@@ -38,14 +38,7 @@ noADisp = size(da,2); % number of possible axial displacements
 noLDisp = size(dl,2); % number of possible lateral displacements
 axialDisplacementMap = zeros(imHight, imWidth);
 lateralDisplacementMap = zeros(imHight, imWidth);
-% numNegativeAxialDis = sum(da <= 0);
-% numPositiveAxialDis = noADisp - numNegativeAxialDis;
-% numNegativeLateralDis = sum(dl <= 0);
-% numPositiveLateralDis = noLDisp - numNegativeLateralDis;
-minAD = min(da);
-maxAD = max(da);
-minLD = min(dl);
-maxLD = max(dl);
+
 
 disp 'Initialization...'
 
@@ -56,7 +49,6 @@ C = NaN(imHight,noADisp, noLDisp);
 disp 'Process Started...';
 
 for colIdx = 1:imWidth
-    
     colIdx = colIdx
     g = OriginalImg;
     g_prime = CompressedImg;
@@ -168,11 +160,17 @@ figure;imagesc(lateralDisplacementMap_median); colormap gray; colorbar; title('L
 
 disp 'Saving Results....';
 
-save('..\Results\DP_2D\AxialDisplacementMap2D.mat', 'axialDisplacementMap');
-save('..\Results\DP_2D\AxialDisplacementMapMedian2D.mat', 'axialDisplacementMap_median');
+% save('..\Results\ex1\DP_2D\AxialDisplacementMap2D.mat', 'axialDisplacementMap');
+% save('..\Results\ex1\DP_2D\AxialDisplacementMapMedian2D.mat', 'axialDisplacementMap_median');
+% 
+% save('..\Results\ex1\DP_2D\LateralDisplacementMap2D.mat', 'lateralDisplacementMap');
+% save('..\Results\ex1\DP_2D\LateralDisplacementMapMedian2D.mat', 'lateralDisplacementMap_median');
 
-save('..\Results\DP_2D\LateralDisplacementMap2D.mat', 'lateralDisplacementMap');
-save('..\Results\DP_2D\LateralDisplacementMapMedian2D.mat', 'lateralDisplacementMap_median');
+save('..\Results\ex2\DP_2D\AxialDisplacementMap2D_ex2.mat', 'axialDisplacementMap');
+save('..\Results\ex2\DP_2D\AxialDisplacementMapMedian2D_ex2.mat', 'axialDisplacementMap_median');
+
+save('..\Results\ex2\DP_2D\LateralDisplacementMap2D_ex2.mat', 'lateralDisplacementMap');
+save('..\Results\ex2\DP_2D\LateralDisplacementMapMedian2D_ex2.mat', 'lateralDisplacementMap_median');
 
 disp 'Results have been saved!';
 
