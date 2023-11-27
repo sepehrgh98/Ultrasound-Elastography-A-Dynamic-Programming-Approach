@@ -6,6 +6,13 @@ close all;
 % OriginalImg = [1 2 3 4 5;6 7 8 9 10;11 12 13 14 15; 16 17 18 19 20];
 % CompressedImg = [2 3 4 5 6;7 8 9 10 11;6 7 9 10 15; 4 6 12 15 16];
 
+% load '../Data/Im0.mat'
+% maxIm = max(Im0(:));
+% OriginalImg = Im0/maxIm;
+% 
+% load '../Data/Im1.mat'
+% CompressedImg = Im1/maxIm;
+
 load '..\RFData\rf01.mat'
 OriginalImg = RfDataDouble(1:1700,:);
 maxIm = max(OriginalImg(:));
@@ -31,10 +38,14 @@ noADisp = size(da,2); % number of possible axial displacements
 noLDisp = size(dl,2); % number of possible lateral displacements
 axialDisplacementMap = zeros(imHight, imWidth);
 lateralDisplacementMap = zeros(imHight, imWidth);
-numNegativeAxialDis = sum(da <= 0);
-numPositiveAxialDis = noADisp - numNegativeAxialDis;
-numNegativeLateralDis = sum(dl <= 0);
-numPositiveLateralDis = noLDisp - numNegativeLateralDis;
+% numNegativeAxialDis = sum(da <= 0);
+% numPositiveAxialDis = noADisp - numNegativeAxialDis;
+% numNegativeLateralDis = sum(dl <= 0);
+% numPositiveLateralDis = noLDisp - numNegativeLateralDis;
+minAD = min(da);
+maxAD = max(da);
+minLD = min(dl);
+maxLD = max(dl);
 
 disp 'Initialization...'
 
@@ -45,26 +56,45 @@ C = NaN(imHight,noADisp, noLDisp);
 disp 'Process Started...';
 
 for colIdx = 1:imWidth
-    tic;
+    
     colIdx = colIdx
     g = OriginalImg;
     g_prime = CompressedImg;
-    stratIndexDeltaAx = numNegativeAxialDis;
-    stratIndexDeltaLat = max(numNegativeLateralDis - colIdx+1,1);
-    endIndexDeltaLat = min(imWidth -colIdx, numPositiveLateralDis) + numNegativeLateralDis;
-    C(1, stratIndexDeltaAx:end, stratIndexDeltaLat:endIndexDeltaLat) = delta2d(1,colIdx, da(stratIndexDeltaAx:end), dl(stratIndexDeltaLat:endIndexDeltaLat), g, g_prime);
+
+    tmpDA = da + 1;
+    tmpDA = (tmpDA>0) & (tmpDA <=imHight);
+
+    stratIndexDeltaAx = find(tmpDA ==1 ,1 , 'first');
+    endIndexDeltaAx = find(tmpDA ==1 ,1 , 'last');
+
+    tmpDL = dl + colIdx;
+    tmpDL = (tmpDL>0) & (tmpDL<=imWidth);
+
+    
+    stratIndexDeltaLat = find(tmpDL ==1 ,1 , 'first');
+    endIndexDeltaLat = find(tmpDL ==1 ,1 , 'last');
+
+    
+    C(1, stratIndexDeltaAx:endIndexDeltaAx, ...
+        stratIndexDeltaLat:endIndexDeltaLat) = delta2d(1, ...
+        colIdx, da(stratIndexDeltaAx:endIndexDeltaAx), ...
+        dl(stratIndexDeltaLat:endIndexDeltaLat), g, g_prime);
+
     M = NaN(imHight, noADisp, noLDisp,2); % 1 for Axial and 2 for Lateral
     for rowIdx = 2:imHight
         minimizedValues = NaN(noADisp, noLDisp);
         minimizedValuesIndex =  NaN(noADisp, noLDisp,2); % 1 for Axial and 2 for Lateral
         delta = NaN(noADisp, noLDisp);
 
-        startADis = max(numNegativeAxialDis - rowIdx + 1, 1);
-        endADis = min(imHight -rowIdx, numPositiveAxialDis) + numNegativeAxialDis;
+        tmpDA = da + rowIdx;
+        tmpDA = (tmpDA>0) & (tmpDA <=imHight);
+
+        startADis = find(tmpDA ==1 ,1 , 'first');
+        endADis = find(tmpDA ==1 ,1 , 'last');
 
         for axDisIdx = startADis:endADis
-            startLDis = max(numNegativeLateralDis - colIdx + 1, 1);
-            endLDis = min(imWidth -colIdx, numPositiveLateralDis) + numNegativeLateralDis;
+            startLDis = stratIndexDeltaLat;
+            endLDis = endIndexDeltaLat;
             for latDisIdx = startLDis:endLDis
                 selectedAIdx = max(axDisIdx - windowSize,1):min(axDisIdx + windowSize,noADisp);
                 selectedLIdx = max(latDisIdx - windowSize,1):min(latDisIdx + windowSize,noLDisp);
@@ -104,8 +134,9 @@ for colIdx = 1:imWidth
         C(rowIdx, :, :) = minimizedValues + delta;
         M(rowIdx, :, :, :) = minimizedValuesIndex;
     end
-
-
+    if all(isnan(M(:)))
+        continue;
+    end
     lastCost = reshape(C(imHight,:,:), noADisp, noLDisp);
     
     minCost = min(lastCost(:));
@@ -121,7 +152,6 @@ for colIdx = 1:imWidth
     lateralDisplacementMap(:,colIdx) = dl(D_idx(:,2))';
     Pre_C = C;
     C = NaN(imHight,noADisp, noLDisp); 
-    toc;
 end
 
 disp 'Process Finished...';

@@ -5,19 +5,33 @@ clear all
 % OriginalImg=[1;2;3;4;5;6;7;8;9;10;11;12;13;14;15];
 % CompressedImg=[0;2;3;4;6;7;8;9;10;9;10;11;12;13;14];
 
-load '..\RFData\rf01.mat'
-OriginalImg = RfDataDouble(1:1700,:);
-maxIm = max(OriginalImg(:));
-OriginalImg = OriginalImg/maxIm;
+% load '..\RFData\rf01.mat'
+% OriginalImg = RfDataDouble(1:1700,:);
+% maxIm = max(OriginalImg(:));
+% OriginalImg = OriginalImg/maxIm;
+% 
+% 
+% load '..\RFData\rf03.mat'
+% CompressedImg = RfDataDouble(1:1700,:);
+% CompressedImg = CompressedImg/maxIm;
 
 
-load '..\RFData\rf03.mat'
-CompressedImg = RfDataDouble(1:1700,:);
-CompressedImg = CompressedImg/maxIm;
+load '../Data/Im0.mat'
+maxIm = max(Im0(:));
+OriginalImg = Im0/maxIm;
 
-% figure;imagesc(OriginalImg); colormap gray; colorbar; title('Original Image');
-% figure;imagesc(CompressedImg); colormap gray; colorbar; title('Compressed Image');
+load '../Data/Im1.mat'
+CompressedImg = Im1/maxIm;
 
+
+
+See_B_mode = 1;
+if See_B_mode
+    BMODE1 = log(abs(hilbert(OriginalImg))+.01);
+    figure,  imagesc(BMODE1);colormap(gray), colorbar
+    BMODE2 = log(abs(hilbert(CompressedImg))+.01);
+    figure, imagesc(BMODE2);colormap(gray), colorbar
+end
 
 
 % Initialization
@@ -84,7 +98,7 @@ disp 'Process Finished...';
 disp 'Showing Results...';
 
 % Results
-figure;imagesc(displacementMap); colormap gray; colorbar; title('Axial Displacement');
+figure;imagesc(displacementMap); colormap hot; colorbar; title('Axial Displacement');
 displacementMap_median=medfilt2(displacementMap);
 figure;imagesc(displacementMap_median); colormap gray; colorbar; title('Axial Displacement Median filtered');
 
@@ -92,7 +106,7 @@ disp 'Saving Results....';
 save('..\Results\DP_1D\DisplacementMap1D.mat', 'displacementMap');
 save('..\Results\DP_1D\DisplacementMapMedian1D.mat', 'displacementMap_median');
 
-fprintf('Results have been saved!\n');
+disp 'Results have been saved!';
 
 
 
