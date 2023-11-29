@@ -45,7 +45,7 @@ colorbar; colormap(gray); title('Elastography Median')
 
 disp 'Calculating 2D DP Strain ...';
 
-wDIff = 43; % window length of the differentiation kernel
+wDIff = 123; % window length of the differentiation kernel
 [strain2D_ex2] = LSQ(axialDisplacementMap,wDIff);
 
 strain2D_ex2 = strain2D_ex2((wDIff+1)/2:end-(wDIff-1)/2,:);

@@ -1,18 +1,45 @@
-function cnrVal = CNR(image, targetWindowFirstPoint, targetWindowLastPoint, marginSize, M)
+function cnrValues = CNR(image, targetWindowFirstPoint, targetWindowLastPoint)
 
     targetWindow = image(targetWindowFirstPoint(1):targetWindowLastPoint(1) ...
                    , targetWindowFirstPoint(2):targetWindowLastPoint(2));
 
-    % Calculate the size of the target window
-    [targetH, targetW] = size(targetWindow);
+    targetSize = size(targetWindow);
+    
+   % Get the size of the image
+    [imageHeight, imageWidth] = size(image);
+    
+    % Calculate the size of each non-overlapping window
+    windowSize = floor([imageHeight, imageWidth] / sqrt(36));
 
-    cnrValues = zeros(1,M+1);
-    for i = 0 : M
-        backgroundWindow = image(marginSize:marginSize+targetW, marginSize + i:marginSize+targetH + i);
-        cnrValues(i+1) = calculateCNR(targetWindow, backgroundWindow);
+    cnrValues = zeros(6,6);
+
+%     hold on;  
+%     rectangle('Position', [targetWindowFirstPoint(2), targetWindowFirstPoint(1), targetSize(2), targetSize(1)], 'EdgeColor', 'g', 'LineWidth', 2);
+%     hold off;
+    
+    % Extract non-overlapping windows
+    for col = 1:6
+        startCol = (col - 1) * windowSize(2) + 2;
+        endCol = startCol + windowSize(2) - 1;
+
+        for row = 1:6
+            % Define the window boundaries
+            startRow = (row - 1) * windowSize(1) + 2;
+            endRow = startRow + windowSize(1) - 1;
+
+            % Extract the window from the image
+            backgroundWindow = image(startRow:endRow, startCol:endCol);
+            cnrValues(row, col) = calculateCNR(targetWindow, backgroundWindow);
+
+
+%             hold on;
+%             rectangle('Position', [startCol, startRow, windowSize(2), windowSize(1)], 'EdgeColor', 'r', 'LineWidth', 2);
+%             hold off;
+
+        end
     end
 
-    cnrVal = mean(cnrValues);
+
 end
 
 function cnrValue = calculateCNR(targetWindow, backgroundWindow)
@@ -20,10 +47,12 @@ function cnrValue = calculateCNR(targetWindow, backgroundWindow)
     % Calculate mean and standard deviation for target and background
     meanTarget = mean(targetWindow(:));
     meanBackground = mean(backgroundWindow(:));
-
-    stdTarget = std(double(targetWindow(:)));
-    stdBackground = std(double(backgroundWindow(:)));
-
+    varTarget = var(targetWindow(:));
+    varBackground = var(backgroundWindow(:));
     % Calculate CNR
-    cnrValue = abs(meanTarget - meanBackground) / sqrt((stdTarget^2 + stdBackground^2) / 2);
+    cnrValue = sqrt(2*(meanBackground - meanTarget)^2 / (varTarget + varBackground));
 end
+
+
+
+

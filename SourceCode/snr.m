@@ -1,17 +1,24 @@
 function snrValue = snr(ImageArray, windowSize)
     [imHight, imWidth] = size(ImageArray);
-    center = [ceil(imHight/2), ceil(imWidth/2)];
-    % Extract a window from the image
-    window = ImageArray(center(1) - ceil(windowSize/2):center(1) - ceil(windowSize/2), ...
-                        center(2) - ceil(windowSize/2):center(2) - ceil(windowSize/2));
 
-    % Calculate the mean of the window
-    meanValue = mean(window, 'all');
+    xcenter = randi([windowSize+1, imHight - windowSize-1], 1, 10);
+    ycenter = randi([windowSize+1, imWidth - windowSize-1], 1, 10);
+    snrVector = zeros(1,10);
+    ceil(windowSize/2)
+    
+    for i = 1:length(xcenter)
+        window = ImageArray(xcenter(i) - ceil(windowSize/2):xcenter(i) + ceil(windowSize/2), ...
+                        ycenter(i) - ceil(windowSize/2):ycenter(i) + ceil(windowSize/2));
 
-    % Calculate the variance of the window
-    tmp = sum((window - meanValue).^2, 'all');
-    variance = sqrt(tmp / (numel(window)));
+        % Calculate the mean of the window
+        meanValue = mean(window, 'all');
+    
+        % Calculate the variance of the window
+        variance = var(window(:));
 
-    % Calculate SNR in dB
-    snrValue = 20 * log10(meanValue / variance);
+    
+        % Calculate SNR in dB
+        snrVector(i) = 20 * log10(meanValue / variance);
+    end
+    snrValue = mean(snrVector);
 end
