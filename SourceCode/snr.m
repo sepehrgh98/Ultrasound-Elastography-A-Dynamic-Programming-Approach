@@ -3,8 +3,8 @@ function snrValue = snr(ImageArray, windowSize)
 
     xcenter = randi([windowSize+1, imHight - windowSize-1], 1, 10);
     ycenter = randi([windowSize+1, imWidth - windowSize-1], 1, 10);
+
     snrVector = zeros(1,10);
-    ceil(windowSize/2)
     
     for i = 1:length(xcenter)
         window = ImageArray(xcenter(i) - ceil(windowSize/2):xcenter(i) + ceil(windowSize/2), ...
@@ -15,6 +15,10 @@ function snrValue = snr(ImageArray, windowSize)
     
         % Calculate the variance of the window
         variance = var(window(:));
+        
+%         hold on;
+%         rectangle('Position', [ycenter(i) - ceil(windowSize/2), xcenter(i) - ceil(windowSize/2), windowSize, windowSize], 'EdgeColor', 'r', 'LineWidth', 2);
+%         hold off;
 
     
         % Calculate SNR in dB
