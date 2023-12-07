@@ -99,10 +99,17 @@ disp 'Results have been saved!';
 disp 'The unitless performance metric Calculation ...!';
 
 
-% surf(strain2D)
-% shading interp  % or shading faceted
-% light
-% lighting gouraud  % or lighting flat
+surf(strain1D)
+shading interp  % or shading faceted
+light
+lighting gouraud  % or lighting flat
+
+
+
+surf(strain2D)
+shading interp  % or shading faceted
+light
+lighting gouraud  % or lighting flat
 
 
 
